@@ -1,23 +1,28 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
-import connectDB from './config/db.js'
+import connectDB from './src/config/db.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+// Route Imports
+import scraperRoutes from './src/routes/scraperRoutes.js'
+import { scrapeStories } from './src/services/scraperService.js'
 
-dotenv.config({ path: path.join(__dirname, '..', '.env') })
+dotenv.config()
 
 // Connect to database
-connectDB()
+connectDB().then(() => {
+  // Trigger scraper on server start
+  scrapeStories()
+})
 
 const app = express()
 
 // Middleware
 app.use(cors())
 app.use(express.json())
+
+// API Routes
+app.use('/api', scraperRoutes)
 
 // Basic route to test server
 app.get('/', (req, res) => {
