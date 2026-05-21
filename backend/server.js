@@ -5,6 +5,8 @@ import connectDB from './src/config/db.js'
 
 // Route Imports
 import scraperRoutes from './src/routes/scraperRoutes.js'
+import authRoutes from './src/routes/authRoutes.js'
+import storyRoutes from './src/routes/storyRoutes.js'
 import { scrapeStories } from './src/services/scraperService.js'
 
 dotenv.config()
@@ -23,6 +25,8 @@ app.use(express.json())
 
 // API Routes
 app.use('/api', scraperRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/stories', storyRoutes)
 
 // Basic route to test server
 app.get('/', (req, res) => {

@@ -21,7 +21,6 @@ export const scrapeStories = async () => {
         const title = titleElement.text()
         let url = titleElement.attr('href')
 
-        // Handle relative URLs (for Ask HN, etc.)
         if (url && url.startsWith('item?id=')) {
           url = `https://news.ycombinator.com/${url}`
         }
