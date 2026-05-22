@@ -28,98 +28,49 @@ const Login = () => {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '80vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          textAlign: 'center',
-          padding: '2rem',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          borderRadius: '8px',
-          background: '#fff',
-        }}
-      >
-        <h2>{isLogin ? 'Login' : 'Register'}</h2>
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            marginTop: '1.5rem',
-          }}
-        >
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2 className="auth-title">{isLogin ? 'Login' : 'Register'}</h2>
+        <form onSubmit={handleSubmit} className="auth-form">
           <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            style={{ padding: '0.5rem', width: '100%', boxSizing: 'border-box' }}
+            className="form-input"
           />
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <div className="password-field">
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ padding: '0.5rem', width: '100%', boxSizing: 'border-box' }}
+              className="form-input"
             />
-            <span
+            <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                cursor: 'pointer',
-                userSelect: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                color: '#666'
-              }}
+              className="password-toggle"
               title={showPassword ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </span>
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
-          <button
-            type="submit"
-            style={{
-              padding: '0.5rem',
-              background: '#ff6600',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="submit" className="btn-primary">
             {isLogin ? 'Sign In' : 'Sign Up'}
           </button>
         </form>
-        {error && (
-          <p style={{ color: 'red', margin: '1rem 0 0', fontSize: '0.9rem' }}>
-            {error}
-          </p>
-        )}
-        <p style={{ marginTop: '1.5rem', marginBottom: 0 }}>
+        {error && <p className="error-msg">{error}</p>}
+        <p className="auth-footer">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}
           <span
             onClick={() => {
               setIsLogin(!isLogin)
               setError('')
             }}
-            style={{
-              cursor: 'pointer',
-              color: 'blue',
-              textDecoration: 'underline',
-            }}
+            className="auth-footer-link"
           >
             {isLogin ? 'Register' : 'Login'}
           </span>

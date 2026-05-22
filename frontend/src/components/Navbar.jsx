@@ -12,57 +12,25 @@ const Navbar = () => {
   }
 
   return (
-    <nav
-      style={{
-        padding: '1rem',
-        background: '#ff6600',
-        color: 'white',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      <h2 style={{ margin: 0 }}>
-        <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
-          Hacker News Clone
-        </Link>
-      </h2>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+    <nav className="navbar">
+      <Link to="/" className="navbar-brand">
+        Hacker News Clone
+      </Link>
+      <div className="navbar-links">
         {user ? (
           <>
-            <Link to="/" style={{ color: 'white', marginRight: '1rem' }}>
+            <Link to="/" className="nav-link">
               Stories
             </Link>
-            <Link
-              to="/bookmarks"
-              style={{ color: 'white', marginRight: '1rem' }}
-            >
+            <Link to="/bookmarks" className="nav-link">
               Bookmarks
             </Link>
-            <button
-              onClick={handleLogout}
-              style={{
-                background: 'transparent',
-                border: '1px solid white',
-                color: 'white',
-                cursor: 'pointer',
-                padding: '5px 10px',
-              }}
-            >
+            <button onClick={handleLogout} className="btn-logout">
               Logout
             </button>
           </>
         ) : (
-          <Link
-            to="/login"
-            style={{
-              color: 'white',
-              fontSize: '1.2rem',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              underline: 'underline',
-            }}
-          >
+          <Link to="/login" className="nav-link">
             Login
           </Link>
         )}

@@ -4,9 +4,9 @@ export const endpoints = {
   // Auth endpoints
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
-  GET_BOOKMARKS: '/auth/bookmarks',
+  GET_BOOKMARKS: '/stories/bookmarks',
 
   // Story endpoints
   GET_STORIES: '/stories',
-  TOGGLE_BOOKMARK: (id) => `/stories/bookmark/${id}`,
+  TOGGLE_BOOKMARK: (id) => `/stories/${id}/bookmark`,
 }

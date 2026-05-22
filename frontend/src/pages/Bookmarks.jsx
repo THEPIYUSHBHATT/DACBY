@@ -1,11 +1,12 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import { getMyBookmarksAPI } from '../services/authService'
+import { getMyBookmarksAPI } from '../services/storyService'
 
 const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState([])
   const [loading, setLoading] = useState(true)
   const { user } = useContext(AuthContext)
+  const fetchedRef = useRef(false)
 
   useEffect(() => {
     const fetchBookmarks = async () => {
@@ -19,63 +20,43 @@ const Bookmarks = () => {
         setLoading(false)
       }
     }
-    if (user) fetchBookmarks()
+
+    if (user && !fetchedRef.current) {
+      fetchedRef.current = true
+      fetchBookmarks()
+    }
   }, [user])
 
-  if (!user)
-    return (
-      <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-        Please login to view bookmarks.
-      </div>
-    )
+  if (!user) {
+    return <div className="empty-state">Please login to view bookmarks.</div>
+  }
 
   if (loading) {
-    return (
-      <div style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '1.1rem' }}>
-        Loading bookmarks...
-      </div>
-    )
+    return <div className="loading">Loading bookmarks...</div>
   }
 
   return (
-    <div
-      style={{
-        maxWidth: '800px',
-        margin: '2rem auto',
-        fontFamily: 'sans-serif',
-      }}
-    >
-      <h2>My Bookmarks</h2>
+    <div className="page-container">
+      <h2 className="page-title">My Bookmarks</h2>
       {bookmarks.length === 0 ? (
-        <p>No bookmarks yet.</p>
+        <p className="empty-state">No bookmarks yet.</p>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        <ul className="story-list">
           {bookmarks.map((story) => (
-            <li
-              key={story._id}
-              style={{ padding: '1rem', borderBottom: '1px solid #ccc' }}
-            >
-              <a
-                href={story.url}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  textDecoration: 'none',
-                  color: '#000',
-                  fontWeight: 'bold',
-                }}
-              >
-                {story.title}
-              </a>
-              <p
-                style={{
-                  margin: '5px 0 0 0',
-                  fontSize: '0.8rem',
-                  color: '#555',
-                }}
-              >
-                {story.points} points by {story.author}
-              </p>
+            <li key={story._id} className="story-item">
+              <div className="story-content">
+                <a
+                  href={story.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="story-link"
+                >
+                  {story.title}
+                </a>
+                <p className="story-meta">
+                  {story.points} points by {story.author}
+                </p>
+              </div>
             </li>
           ))}
         </ul>

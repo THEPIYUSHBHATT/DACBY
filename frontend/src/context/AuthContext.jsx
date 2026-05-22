@@ -8,11 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(token ? { token } : null)
 
   useEffect(() => {
-    if (token) {
-      setUser({ token })
-    } else {
-      setUser(null)
-    }
+    setUser(token ? { token } : null)
   }, [token])
 
   const login = async (username, password) => {
