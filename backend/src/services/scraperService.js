@@ -9,8 +9,7 @@ export const scrapeStories = async (io = null) => {
     const $ = cheerio.load(data)
     const stories = []
 
-    // Hacker News lists stories in a sequence of tr elements.
-    // We'll select the title rows which have the class "athing".
+    // Each story on HN is a <tr class="athing">, followed by a sibling <tr> with metadata
     $('.athing')
       .slice(0, 10)
       .each((index, element) => {
@@ -21,11 +20,11 @@ export const scrapeStories = async (io = null) => {
         const title = titleElement.text()
         let url = titleElement.attr('href')
 
+        // Internal HN links are relative paths like "item?id=123"
         if (url && url.startsWith('item?id=')) {
           url = `https://news.ycombinator.com/${url}`
         }
 
-        // The exact next sibling <tr> contains the subtext (points, author, time)
         const subtextRow = el.next()
         const pointsText = subtextRow.find('.score').text() || '0 points'
         const points = parseInt(pointsText.replace(/\D/g, ''), 10) || 0
@@ -47,18 +46,17 @@ export const scrapeStories = async (io = null) => {
 
     console.log(`Scraped ${stories.length} stories. Saving to DB...`)
 
-    // Save to Database (using insertOne/Update with upsert to prevent duplicates)
+    // Upsert by hnId so re-scraping updates existing stories instead of duplicating
     for (const storyData of stories) {
-      await Story.findOneAndUpdate(
-        { hnId: storyData.hnId }, // Search by hnId
-        storyData, // Update with fresh points/data
-        { upsert: true, returnDocument: 'after' }, // Insert if it does not exist
-      )
+      await Story.findOneAndUpdate({ hnId: storyData.hnId }, storyData, {
+        upsert: true,
+        new: true,
+      })
     }
 
     console.log('Scraping and DB update complete.')
 
-    // Broadcast real-time update using websockets
+    // Push live update to all connected clients
     if (io) {
       io.emit('newScrape', stories)
     }

@@ -5,7 +5,6 @@ import http from 'http'
 import { Server } from 'socket.io'
 import connectDB from './src/config/db.js'
 
-// Route Imports
 import scraperRoutes from './src/routes/scraperRoutes.js'
 import authRoutes from './src/routes/authRoutes.js'
 import storyRoutes from './src/routes/storyRoutes.js'
@@ -22,27 +21,23 @@ const io = new Server(server, {
   },
 })
 
-// Pass io to scraper service so it can emit events
+// Store io instance so controllers can access it via req.app.get('io')
 app.set('io', io)
 
-// Connect to database
-connectDB().then(() => {
-  // Trigger scraper on server start, passing the io instance
-  scrapeStories(io)
-})
-
-// Middleware
 app.use(cors())
 app.use(express.json())
 
-// API Routes
 app.use('/api', scraperRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/stories', storyRoutes)
 
-// Basic route to test server
 app.get('/', (req, res) => {
   res.send('API is running...')
+})
+
+// Run scraper once on startup after DB is ready
+connectDB().then(() => {
+  scrapeStories(io)
 })
 
 const PORT = process.env.PORT || 5000

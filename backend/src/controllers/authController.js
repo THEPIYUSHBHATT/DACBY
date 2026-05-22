@@ -41,11 +41,3 @@ export const loginUser = async (req, res) => {
   }
 }
 
-export const getMyBookmarks = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).populate('bookmarks')
-    res.json(user.bookmarks)
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message })
-  }
-}

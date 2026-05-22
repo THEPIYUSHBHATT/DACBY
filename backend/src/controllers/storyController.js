@@ -7,7 +7,6 @@ export const getStories = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10
     const skip = (page - 1) * limit
 
-    // Sorting by points descending (-1) as required!
     const stories = await Story.find()
       .sort({ points: -1 })
       .skip(skip)
@@ -33,16 +32,15 @@ export const getStoryById = async (req, res) => {
 export const toggleBookmark = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
-    const isBookmarked = user.bookmarks.includes(req.params.id)
+    const storyId = req.params.id
+    const isBookmarked = user.bookmarks.includes(storyId)
 
     if (isBookmarked) {
-      // Remove
       user.bookmarks = user.bookmarks.filter(
-        (id) => id.toString() !== req.params.id,
+        (id) => id.toString() !== storyId,
       )
     } else {
-      // Add
-      user.bookmarks.push(req.params.id)
+      user.bookmarks.push(storyId)
     }
 
     await user.save()
@@ -50,6 +48,15 @@ export const toggleBookmark = async (req, res) => {
       message: isBookmarked ? 'Bookmark removed' : 'Bookmark added',
       bookmarks: user.bookmarks,
     })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
+
+export const getMyBookmarks = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('bookmarks')
+    res.json(user.bookmarks)
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message })
   }

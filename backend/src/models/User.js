@@ -10,14 +10,13 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-// Hash password before saving to DB
+// Only re-hash if password field was modified (e.g. skip on bookmark updates)
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return
   const salt = await bcrypt.genSalt(10)
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-// Method to verify passwords during login
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }

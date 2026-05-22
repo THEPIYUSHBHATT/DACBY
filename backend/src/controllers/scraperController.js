@@ -2,7 +2,9 @@ import { scrapeStories } from '../services/scraperService.js'
 
 export const triggerScrape = async (req, res) => {
   try {
-    const stories = await scrapeStories()
+    // Grab the socket.io instance so API-triggered scrapes also broadcast live
+    const io = req.app.get('io')
+    const stories = await scrapeStories(io)
     res
       .status(200)
       .json({ message: 'Scraping successful', count: stories.length, stories })
