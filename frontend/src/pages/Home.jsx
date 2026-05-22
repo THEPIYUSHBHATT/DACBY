@@ -13,6 +13,7 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [bookmarkedIds, setBookmarkedIds] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -24,6 +25,7 @@ const Home = () => {
   }, [user, navigate]);
 
   const fetchStories = async (p = 1) => {
+    setLoading(true);
     try {
       const { data } = await fetchStoriesAPI(p, 10);
       setStories(data.stories);
@@ -31,6 +33,8 @@ const Home = () => {
       setTotalPages(data.pages);
     } catch (error) {
       console.error("Error fetching stories:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,6 +68,10 @@ const Home = () => {
 
   // Prevent UI flashing during redirect
   if (!user) return null;
+
+  if (loading && stories.length === 0) {
+    return <div style={{ textAlign: 'center', marginTop: '3rem', fontSize: '1.2rem' }}>Loading stories...</div>;
+  }
 
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', fontFamily: 'sans-serif' }}>

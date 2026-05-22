@@ -8,8 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(token ? { token } : null)
 
   useEffect(() => {
-    // Because we are using apiConnector interceptors now,
-    // we don't need to manually configure axios default headers here!
     if (token) {
       setUser({ token })
     } else {

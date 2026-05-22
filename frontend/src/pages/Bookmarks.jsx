@@ -4,15 +4,19 @@ import { getMyBookmarksAPI } from '../services/authService'
 
 const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState([])
+  const [loading, setLoading] = useState(true)
   const { user } = useContext(AuthContext)
 
   useEffect(() => {
     const fetchBookmarks = async () => {
+      setLoading(true)
       try {
         const { data } = await getMyBookmarksAPI()
         setBookmarks(data)
       } catch (error) {
         console.error('Error fetching bookmarks:', error)
+      } finally {
+        setLoading(false)
       }
     }
     if (user) fetchBookmarks()
@@ -24,6 +28,14 @@ const Bookmarks = () => {
         Please login to view bookmarks.
       </div>
     )
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '1.1rem' }}>
+        Loading bookmarks...
+      </div>
+    )
+  }
 
   return (
     <div
