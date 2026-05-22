@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useRef } from 'react'
 import io from 'socket.io-client'
 import { AuthContext } from '../context/AuthContext'
 import { fetchStoriesAPI, toggleBookmarkAPI, getMyBookmarksAPI } from '../services/storyService'
+import { Bookmark } from 'lucide-react'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
@@ -94,7 +95,13 @@ const Home = () => {
                 {index + 1 + (page - 1) * 10}. {story.title}
               </a>
               <p className="story-meta">
-                {story.points} points by {story.author} | {story.postedAt}
+                {[
+                  story.points ? `${story.points} points` : null,
+                  story.author ? `by ${story.author}` : null,
+                  story.postedAt ? story.postedAt : null,
+                ]
+                  .filter(Boolean)
+                  .join(' | ')}
               </p>
             </div>
             {user && (
@@ -107,7 +114,10 @@ const Home = () => {
                     : 'Add bookmark'
                 }
               >
-                ★
+                <Bookmark 
+                  size={20} 
+                  fill={bookmarkedIds.includes(story._id) ? "currentColor" : "none"} 
+                />
               </button>
             )}
           </li>

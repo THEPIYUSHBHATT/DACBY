@@ -26,13 +26,12 @@ export const scrapeStories = async (io = null) => {
         }
 
         const subtextRow = el.next()
-        const pointsText = subtextRow.find('.score').text() || '0 points'
-        const points = parseInt(pointsText.replace(/\D/g, ''), 10) || 0
-        const author = subtextRow.find('.hnuser').text() || 'unknown'
-        const postedAt =
-          subtextRow.find('.age').attr('title') ||
-          subtextRow.find('.age').text() ||
-          new Date().toISOString()
+        const pointsText = subtextRow.find('.score').text()
+        const points = pointsText ? parseInt(pointsText.replace(/\D/g, ''), 10) : 0
+        const author = subtextRow.find('.hnuser').text() || ''
+        
+        // Grab the readable text like "3 hours ago" and clean any extra whitespace
+        const postedAt = subtextRow.find('.age').text().trim() || ''
 
         stories.push({
           hnId,

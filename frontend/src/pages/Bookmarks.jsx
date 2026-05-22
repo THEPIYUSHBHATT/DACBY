@@ -54,7 +54,12 @@ const Bookmarks = () => {
                   {story.title}
                 </a>
                 <p className="story-meta">
-                  {story.points} points by {story.author}
+                  {[
+                    story.points ? `${story.points} points` : null,
+                    story.author ? `by ${story.author}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' | ')}
                 </p>
               </div>
             </li>

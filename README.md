@@ -1,40 +1,28 @@
-# Hacker News Scraper Clone
+# Hacker News Scraper Clone (MERN)
 
-A full-stack web application that scrapes the top stories from Hacker News in real-time, allowing users to register, log in, and bookmark their favorite stories. Built with the MERN stack and WebSockets for real-time updates.
+A mini full-stack web application that scrapes the top stories from Hacker News in real-time. Users can register, log in, and bookmark their favorite stories. Built with the MERN stack and WebSockets for real-time updates.
 
-## Features
+**Live Demo:**
+- **Frontend:** [https://dacby-eta.vercel.app/](https://dacby-eta.vercel.app/) (Hosted on Vercel)
+- **Backend API:** [https://dacby-lzod.onrender.com/](https://dacby-lzod.onrender.com/) (Hosted on Render)
 
-- **Real-Time Web Scraping:** Backend periodically scrapes Hacker News using `axios` and `cheerio`, broadcasting updates to all connected clients instantly via WebSockets (`socket.io`).
-- **User Authentication:** Secure JWT-based authentication with properly hashed passwords (`bcryptjs`).
-- **Bookmark System:** Users can bookmark/unbookmark stories. Bookmarks are persisted in MongoDB and linked directly to the user's account.
-- **Service Layer Architecture:** Clean frontend architecture abstracting API calls away from UI components using Axios Interceptors for seamless token injection.
-- **Pagination:** Feed supports pagination to easily navigate through the scraped stories.
+## Features Implemented
+
+- **Web Scraper (Server-side):** Automatically scrapes top 10 HN stories using `axios` and `cheerio`.
+- **Real-Time Updates:** Backend pushes new stories to connected clients instantly via WebSockets (`socket.io`), seamlessly updating the UI without a page refresh.
+- **User Authentication:** Secure JWT-based authentication with `bcryptjs` password hashing. Protected endpoints.
+- **Bookmark System:** Users can save/unsave stories to their personal account.
+- **Clean Architecture:** Strict separation of concerns (Routes -> Controllers -> Services).
+- **Responsive UI:** Custom CSS design system (no messy inline styles).
+- **Graceful Async Handling:** Uses `AbortController` in React to cleanly cancel strict-mode duplicate requests and prevent memory leaks.
 
 ## Tech Stack
 
-**Frontend:**
+- **Frontend:** React 19 (Vite), Context API, React Router DOM, Axios, Custom CSS.
+- **Backend:** Node.js, Express.js, MongoDB (Mongoose).
+- **Additional:** Socket.io (Real-time events), Cheerio (HTML Parsing), JWT.
 
-- React 19 (Vite)
-- React Router DOM
-- Context API (Global State Management)
-- Axios (HTTP requests & Interceptors)
-- Socket.io-client
-- Lucide React (Icons)
-
-**Backend:**
-
-- Node.js & Express
-- MongoDB & Mongoose (Schema validation & relationships)
-- Socket.io (Real-time updates)
-- Cheerio (HTML Parsing)
-- JSON Web Tokens (JWT) & bcryptjs
-
-## Prerequisites
-
-- Node.js installed
-- A running MongoDB URI (Local or Atlas)
-
-## Getting Started
+## Running the Project Locally
 
 ### 1. Backend Setup
 
@@ -43,19 +31,17 @@ cd backend
 npm install
 ```
 
-Create a `.env` file in the `backend` folder:
-
+Create a `.env` file in the `backend/` directory:
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_super_secret_key
 ```
 
-Run the backend server:
-
+Start the backend server (starts the DB connection and initial scrape):
 ```bash
-npm start
-# Server will run on http://localhost:5000
+npm run dev
+# Server runs on http://localhost:5000
 ```
 
 ### 2. Frontend Setup
@@ -65,22 +51,26 @@ cd frontend
 npm install
 ```
 
-Create a `.env` file in the `frontend` folder:
-
+Create a `.env` file in the `frontend/` directory:
 ```env
 VITE_BACKEND_URL=http://localhost:5000
 ```
 
-Run the frontend app:
-
+Start the React application:
 ```bash
 npm run dev
-# App will run on http://localhost:5173 (or 5174)
+# App runs on http://localhost:5173
 ```
 
-## Architecture Overview
+## Folder Structure Highlights
 
-- **REST API:** Handles standard CRUD operations (Register, Login, Fetch Stories, Toggle Bookmarks).
-- **WebSockets:** The backend pushes a `newScrape` event socket whenever new stories are persisted in the DB. The frontend listens to this and soft-reloads the feed.
-- **Axios Interceptor:** Intercepts all outgoing requests in the frontend and securely injects the Authorization Bearer Token.
-- **Upsert DB Logic:** The scraper ensures no duplicate story entries by utilizing Mongoose's `findOneAndUpdate` with `upsert: true` utilizing the unique `hnId`.
+The backend follows a scalable MVC-inspired structure:
+- `routes/` - Maps HTTP paths to controller functions.
+- `controllers/` - Handles req/res parsing and error handling.
+- `models/` - Mongoose schemas (Story, User).
+- `services/` - Business logic (the Scraper logic lives here).
+- `middleware/` - JWT auth validation.
+
+## Edge Cases Handled
+- **No Duplicate Stories:** The scraper uses `findOneAndUpdate` with `upsert: true` matching by HackerNews' unique ID to prevent duplicating database records on re-scrapes.
+- **Secure Password Hashing:** User schema intercepts `save` events to hash passwords, ensuring they are never stored in plaintext.
