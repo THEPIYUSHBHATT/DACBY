@@ -3,8 +3,8 @@ import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 
-const Login = () => {
-  const [isLogin, setIsLogin] = useState(true)
+const Login = ({ mode = 'login' }) => {
+  const isLogin = mode === 'login'
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -67,7 +67,7 @@ const Login = () => {
           {isLogin ? "Don't have an account? " : 'Already have an account? '}
           <span
             onClick={() => {
-              setIsLogin(!isLogin)
+              navigate(isLogin ? '/register' : '/login')
               setError('')
             }}
             className="auth-footer-link"
