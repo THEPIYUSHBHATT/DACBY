@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as cheerio from 'cheerio'
 import Story from '../models/Story.js'
 
-export const scrapeStories = async () => {
+export const scrapeStories = async (io = null) => {
   try {
     console.log('Starting Hacker News scraper...')
     const { data } = await axios.get('https://news.ycombinator.com/')
@@ -57,6 +57,12 @@ export const scrapeStories = async () => {
     }
 
     console.log('Scraping and DB update complete.')
+
+    // Broadcast real-time update using websockets
+    if (io) {
+      io.emit('newScrape', stories)
+    }
+
     return stories
   } catch (error) {
     console.error('Error during scraping:', error.message)

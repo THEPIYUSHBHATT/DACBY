@@ -1,6 +1,8 @@
 import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
+import http from 'http'
+import { Server } from 'socket.io'
 import connectDB from './src/config/db.js'
 
 // Route Imports
@@ -11,13 +13,23 @@ import { scrapeStories } from './src/services/scraperService.js'
 
 dotenv.config()
 
-// Connect to database
-connectDB().then(() => {
-  // Trigger scraper on server start
-  scrapeStories()
+const app = express()
+const server = http.createServer(app)
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
 })
 
-const app = express()
+// Pass io to scraper service so it can emit events
+app.set('io', io)
+
+// Connect to database
+connectDB().then(() => {
+  // Trigger scraper on server start, passing the io instance
+  scrapeStories(io)
+})
 
 // Middleware
 app.use(cors())
@@ -35,6 +47,6 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
