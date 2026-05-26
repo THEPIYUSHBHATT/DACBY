@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, useRef } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { getMyBookmarksAPI } from '../services/storyService'
+import { formatRelativeTime } from '../utils/dateFormatter'
 
 const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState([])
@@ -57,6 +58,7 @@ const Bookmarks = () => {
                   {[
                     story.points ? `${story.points} points` : null,
                     story.author ? `by ${story.author}` : null,
+                    story.postedAt ? formatRelativeTime(story.postedAt) : null,
                   ]
                     .filter(Boolean)
                     .join(' | ')}

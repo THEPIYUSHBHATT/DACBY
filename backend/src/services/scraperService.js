@@ -30,8 +30,14 @@ export const scrapeStories = async (io = null) => {
         const points = pointsText ? parseInt(pointsText.replace(/\D/g, ''), 10) : 0
         const author = subtextRow.find('.hnuser').text() || ''
         
-        // Grab the readable text like "3 hours ago" and clean any extra whitespace
-        const postedAt = subtextRow.find('.age').text().trim() || ''
+        // Try getting ISO datetime, fallback to absolute title, and then relative text
+        const ageElement = subtextRow.find('.age')
+        const postedAt = 
+          ageElement.find('time').attr('datetime') || 
+          ageElement.attr('title') || 
+          ageElement.find('a').attr('title') || 
+          ageElement.text().trim() || 
+          ''
 
         stories.push({
           hnId,
@@ -45,13 +51,16 @@ export const scrapeStories = async (io = null) => {
 
     console.log(`Scraped ${stories.length} stories. Saving to DB...`)
 
-    // Upsert by hnId so re-scraping updates existing stories instead of duplicating
-    for (const storyData of stories) {
-      await Story.findOneAndUpdate({ hnId: storyData.hnId }, storyData, {
+    // Use bulkWrite to execute all 10 operations in a single database round-trip
+    const bulkOps = stories.map((storyData) => ({
+      updateOne: {
+        filter: { hnId: storyData.hnId },
+        update: { $set: storyData },
         upsert: true,
-        new: true,
-      })
-    }
+      },
+    }))
+
+    await Story.bulkWrite(bulkOps)
 
     console.log('Scraping and DB update complete.')
 

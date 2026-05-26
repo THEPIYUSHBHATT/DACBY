@@ -33,7 +33,9 @@ export const toggleBookmark = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
     const storyId = req.params.id
-    const isBookmarked = user.bookmarks.includes(storyId)
+    const isBookmarked = user.bookmarks.some(
+      (id) => id.toString() === storyId
+    )
 
     if (isBookmarked) {
       user.bookmarks = user.bookmarks.filter(
